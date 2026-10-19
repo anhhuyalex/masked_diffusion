@@ -9,27 +9,16 @@ namespace MaskedDiffusion
 # Masked Diffusion
 
 
-This post explores writing formally verified ML code in Lean.
-Since the cost of proofs is declining rapidly and the amount of code generated
-is skyrocketing, the value of verified code seems likely to climb.
-While understanding proofs remains challenging, collaborating with AI to get
-proofs of easy-to-understand properties seems like a natural middle ground.
+This post explores how to study the properties of diffusion models in Lean.
 
-The goal of this post is to verify foundational properties of Transformers.
-These are critical properties that are used for
-parallelization and optimization, including tensor parallelism, data parallelism,
-batch invariance, permutation invariance, correctness of tiling, and locality
-of sparse attention models. Code is available at [srush/lean-transformer](https://github.com/srush/lean-transformer).
-The text, comments, and structure of the blog are all human-written;
-the proofs are all written by AI. Hopefully it can also serve as an advanced
-intro to Lean.
+The goal of this post is to verify foundational properties of diffusion models,
+building towards a fully verified masked diffusion model,
+implemented using transformers in Lean.
 
-
-This project is inspired by [TorchLean](https://arxiv.org/abs/2602.22631),
+This project is inspired by Sasha Rush's Lean-Verified Transformers [tutorial](https://srush.github.io/lean-transformer/),
+[TorchLean](https://arxiv.org/abs/2602.22631),
 [Verified Deep Learning with Lean 4](https://lean.brettkoonce.com/blueprint/),
 and the [Dex Programming Language](https://github.com/google-research/dex-lang).
-
- - [srush](https://rush-nlp.com/)
 
 -/
 
