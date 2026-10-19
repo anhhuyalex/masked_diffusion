@@ -40,6 +40,33 @@ The data sample $`\mathbf{x}_0` gradually loses its distinguishable features as 
 
 -/
 
+/-- The forward diffusion process defines a Markov chain over $`T` steps that adds Gaussian noise
+    to a sample $`\mathbf{x}_0` according to a variance schedule $`\{\beta_t \in (0, 1)\\}_{t=1}^T`.
+    At each step $`t`, the forward transition distribution is
+    $$`
+    q(\mathbf{x}_t \mid \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1-\beta_t}\mathbf{x}_{t-1}, \beta_t \mathbf{I})
+    `
+    Because the reverse conditional $`q(\mathbf{x}_{t-1} \mid \mathbf{x}_t)` is unknown and intractable,
+    a reverse model $`p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t)` is trained using the variational lower bound. -/
+structure ForwardDiffusionProcess (State : Type u) where
+  /-- Total number of diffusion steps $`T`. -/
+  T : Nat
+  /-- Variance schedule $`\beta_t` for each step $`t \in \\{0, \\ldots, T-1\\}`. -/
+  beta : Fin T → Rat
+  /-- The variance schedule satisfies $`0 < \beta_t < 1` for all $`t`. -/
+  beta_valid : ∀ t, 0 < beta t ∧ beta t < 1
+
+/-- Forward transition step: produces the next noisy sample
+    $`\mathbf{x}_t = \sqrt{1 - \beta_t}\mathbf{x}_{t-1} + \sqrt{\beta_t}\epsilon`
+    given the previous sample $`\mathbf{x}_{t-1}`, scaling factors, and noise $`\epsilon \sim \mathcal{N}(0, \mathbf{I})`. -/
+def forward_step {State : Type u}
+    (scale : Rat → State → State)
+    (add : State → State → State)
+    (sqrt_one_minus_beta : Rat)
+    (sqrt_beta : Rat)
+    (x_prev : State) (noise : State) : State :=
+  add (scale sqrt_one_minus_beta x_prev) (scale sqrt_beta noise)
+
 def Equivariant
     -- Arguments with { } are implicit
     {Shape : Type u}
