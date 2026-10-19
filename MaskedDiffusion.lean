@@ -41,7 +41,7 @@ The data sample $`\mathbf{x}_0` gradually loses its distinguishable features as 
 -/
 
 /-- The forward diffusion process defines a Markov chain over $`T` steps that adds Gaussian noise
-    to a sample $`\mathbf{x}_0` according to a variance schedule $`\{\beta_t \in (0, 1)\\}_{t=1}^T`.
+    to a sample $`\mathbf{x}_0` according to a variance schedule $`\{\beta_t \in (0, 1)\}_{t=1}^T`.
     At each step $`t`, the forward transition distribution is
     $$`
     q(\mathbf{x}_t \mid \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1-\beta_t}\mathbf{x}_{t-1}, \beta_t \mathbf{I})
@@ -49,11 +49,11 @@ The data sample $`\mathbf{x}_0` gradually loses its distinguishable features as 
     Because the reverse conditional $`q(\mathbf{x}_{t-1} \mid \mathbf{x}_t)` is unknown and intractable,
     a reverse model $`p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t)` is trained using the variational lower bound. -/
 structure ForwardDiffusionProcess (State : Type u) where
-  /-- Total number of diffusion steps $`T`. -/
+  -- Total number of diffusion steps T
   T : Nat
-  /-- Variance schedule $`\beta_t` for each step $`t \in \\{0, \\ldots, T-1\\}`. -/
+  -- Variance schedule β_t for each step t ∈ {0, ..., T-1}
   beta : Fin T → Rat
-  /-- The variance schedule satisfies $`0 < \beta_t < 1` for all $`t`. -/
+  -- The variance schedule satisfies 0 < β_t < 1 for all t
   beta_valid : ∀ t, 0 < beta t ∧ beta t < 1
 
 /-- Forward transition step: produces the next noisy sample
@@ -66,6 +66,46 @@ def forward_step {State : Type u}
     (sqrt_beta : Rat)
     (x_prev : State) (noise : State) : State :=
   add (scale sqrt_one_minus_beta x_prev) (scale sqrt_beta noise)
+
+/-!
+
+A nice property of the above process is that we can sample $`\mathbf{x}_t` at any arbitrary time step $`t` in a closed form using reparameterization trick. Let $`\alpha_t=1-\beta_t` and $`\bar{\alpha}_t=\prod_{i=1}^t \alpha_i` :
+
+$$`
+\begin{array}{rlr}
+\mathbf{x}_t & =\sqrt{\alpha_t} \mathbf{x}_{t-1}+\sqrt{1-\alpha_t} \epsilon_{t-1} & ; \text { where } \epsilon_{t-1}, \epsilon_{t-2}, \cdots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
+& =\sqrt{\alpha_t \alpha_{t-1}} \mathbf{x}_{t-2}+\sqrt{1-\alpha_t \alpha_{t-1}} \bar{\epsilon}_{t-2} & ; \text { where } \bar{\epsilon}_{t-2} \text { merges two Gaussians (*). } \\
+& =\cdots & \\
+& =\sqrt{\bar{\alpha}_t} \mathbf{x}_0+\sqrt{1-\bar{\alpha}_t} \epsilon & \\
+q\left(\mathbf{x}_t \mid \mathbf{x}_0\right) & =\mathcal{N}\left(\mathbf{x}_t ; \sqrt{\bar{\alpha}_t} \mathbf{x}_0,\left(1-\bar{\alpha}_t\right) \mathbf{I}\right)
+\end{array}
+`
+
+-/
+
+/-- Merging two independent Gaussians:
+    When combining two diffusion steps, the variances of the noise terms
+    $`\sqrt{\alpha_t(1 - \alpha_{t-1})}\epsilon_{t-2}` and $`\sqrt{1 - \alpha_t}\epsilon_{t-1}`
+    sum to $`1 - \alpha_t \alpha_{t-1}`:
+    $$`
+    \alpha_t (1 - \alpha_{t-1}) + (1 - \alpha_t) = 1 - \alpha_t \alpha_{t-1}
+    `
+    This identity allows collapsing consecutive Gaussian transitions into a single step. -/
+theorem merge_two_gaussians_variance (α_t α_prev : Rat) :
+    α_t * (1 - α_prev) + (1 - α_t) = 1 - α_t * α_prev := by
+  grind
+
+/-- Unfolding two forward steps algebraically:
+    Substituting $`\mathbf{x}_{t-1} = a_{prev} \mathbf{x}_{t-2} + b_{prev} \epsilon_{t-2}` into
+    $`\mathbf{x}_t = a_t \mathbf{x}_{t-1} + b_t \epsilon_{t-1}` yields
+    $`(a_t a_{prev}) \mathbf{x}_{t-2} + (a_t b_{prev} \epsilon_{t-2} + b_t \epsilon_{t-1})`. -/
+theorem forward_two_steps_unfold
+    (a_t b_t a_prev b_prev x_t_minus_2 eps_prev eps_t : Rat) :
+    a_t * (a_prev * x_t_minus_2 + b_prev * eps_prev) + b_t * eps_t =
+      (a_t * a_prev) * x_t_minus_2 + ((a_t * b_prev) * eps_prev + b_t * eps_t) := by
+  grind
+
+
 
 def Equivariant
     -- Arguments with { } are implicit
