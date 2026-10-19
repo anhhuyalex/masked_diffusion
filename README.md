@@ -1,7 +1,7 @@
-# Lean Verified Transformers
+# Masked Diffusion
 
-[Read the article](https://srush.github.io/lean-transformer/), or explore the
-definitions and proofs in [Transformer.lean](Transformer.lean).
+[Read the article](https://anhhuyalex.github.io/masked_diffusion/), or explore the
+definitions and proofs in [MaskedDiffusion.lean](MaskedDiffusion.lean).
 
 ## Open in VS Code
 
@@ -9,11 +9,11 @@ definitions and proofs in [Transformer.lean](Transformer.lean).
    [Lean 4 extension](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4).
    Follow its setup guide to install Lean's toolchain manager, Elan, and Git.
    See the [Lean installation guide](https://lean-lang.org/install/) if needed.
-2. Clone this repository (GitHub access is required while it is private):
+2. Clone this repository:
 
    ```sh
-   git clone https://github.com/srush/lean-transformer.git
-   cd lean-transformer
+   git clone https://github.com/anhhuyalex/masked_diffusion.git
+   cd masked_diffusion
    ```
 
 3. Open this entire folder in VS Code with **File → Open Folder** (or `code .`).
@@ -25,7 +25,7 @@ definitions and proofs in [Transformer.lean](Transformer.lean).
 
    The project pins Lean in `lean-toolchain` and Verso in `lake-manifest.json`.
    The first build downloads dependencies and can take a few minutes.
-4. Open `Transformer.lean`. Click inside a proof to see its goals and hypotheses
+4. Open `MaskedDiffusion.lean`. Click inside a proof to see its goals and hypotheses
    in Lean's **InfoView**. Edits are checked automatically.
 
 If `lake` is not found, finish the extension's setup guide and restart the terminal.

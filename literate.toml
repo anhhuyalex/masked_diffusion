@@ -1,15 +1,15 @@
-landing_page = "Transformer"
+landing_page = "MaskedDiffusion"
 extra_css = ["site/tufte.css", "site/verso-tufte.css"]
 extra_js = ["site/contents.js"]
 hide_commands = ["import", "set_option", "namespace", "end"]
 show_imports = false
 
 [metadata]
-title = "Lean Verified Transformers"
-description = "Rational vectors, sequence models, and verified parallelism in Lean."
+title = "Masked Diffusion"
+description = "Masked Diffusion in Lean."
 
 [[targets]]
-module = "Transformer"
+module = "MaskedDiffusion"
 
-[modules.Transformer]
-title = "Lean Verified Transformers"
+[modules.MaskedDiffusion]
+title = "Masked Diffusion"

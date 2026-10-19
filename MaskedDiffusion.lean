@@ -2,11 +2,11 @@ import Std
 
 set_option doc.verso true
 
-namespace Transformer
+namespace MaskedDiffusion
 
 
 /-!
-# Lean Verified Transformers
+# Masked Diffusion
 
 
 This post explores writing formally verified ML code in Lean.
@@ -1244,4 +1244,4 @@ interesting challenge over the next year.
 -/
 
 
-end Transformer
+end MaskedDiffusion
