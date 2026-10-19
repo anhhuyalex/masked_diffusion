@@ -20,24 +20,23 @@ This project is inspired by Sasha Rush's Lean-Verified Transformers [tutorial](h
 [Verified Deep Learning with Lean 4](https://lean.brettkoonce.com/blueprint/),
 and the [Dex Programming Language](https://github.com/google-research/dex-lang).
 
+The diffusion model component is inspired by Lilian Weng's diffusion model [blog post](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/)
 -/
 
 /-!
 
-# Invariance and Equivariance
+# Diffusion Models
 
-Different neural network architectures retain different properties of their input.
-We generally classify these properties in terms of equivariance and invariance.
-These allow researchers to reason about what they can learn, and
-implementers to optimize computation while maintaining equivalence.
-Our goal will be to prove equivariances and invariances for specific architectures.
+Given a data point sampled from a real data distribution $`\mathbf{x}_0 \sim q(\mathbf{x})`, let us define a forward diffusion process in which we add small amount of Gaussian noise to the sample in $`T` steps, producing a sequence of noisy samples $`\mathbf{x}_1, \ldots, \mathbf{x}_T`. The step sizes are controlled by a variance schedule $`\{\beta_t \in(0,1)\}_{t=1}^T`.
 
+$$`
+q\left(\mathbf{x}_t \mid \mathbf{x}_{t-1}\right)=\mathcal{N}\left(\mathbf{x}_t ; \sqrt{1-\beta_t} \mathbf{x}_{t-1}, \beta_t \mathbf{I}\right) \quad q\left(\mathbf{x}_{1: T} \mid \mathbf{x}_0\right)=\prod_{t=1}^T q\left(\mathbf{x}_t \mid \mathbf{x}_{t-1}\right)
+`
 
-![Equivariance transforms the output along with the input; invariance leaves the output unchanged.](site/diagrams/equivariance-invariance.svg)
+The data sample $`\mathbf{x}_0` gradually loses its distinguishable features as the step $`t` becomes larger. Eventually when $`T \rightarrow \infty`, $`\mathbf{x}_T` is equivalent to an isotropic Gaussian distribution.
 
-Notationally, ML definitions often assume the same functions can work on
-different input shapes, e.g. batch sizes. For this reason, our Lean definition
-will be a bit complex to allow for functions that are polymorphic over the shape.
+![The Markov chain of forward (reverse) diffusion process of generating a sample by slowly adding (removing) noise. (Image source: \[Ho et al. 2020\](https://arxiv.org/abs/2006.11239) with a few additional annotations)](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/DDPM.png)
+
 
 -/
 
